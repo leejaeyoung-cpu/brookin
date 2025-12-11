@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import {
     LayoutDashboard,
     FileText,
+    BookOpen,
     Send,
     QrCode,
     LogOut,
@@ -17,6 +18,7 @@ export default function AdminSidebar() {
 
     const menuItems = [
         { name: '대시보드', href: '/admin', icon: LayoutDashboard },
+        { name: '주보 관리', href: '/admin/bulletin', icon: BookOpen },
         { name: '소식 관리', href: '/admin/news', icon: FileText },
         { name: '메시지 발송', href: '/admin/messages', icon: Send },
         { name: 'QR 코드', href: '/admin/qr-code', icon: QrCode },
