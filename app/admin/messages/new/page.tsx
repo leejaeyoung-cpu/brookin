@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Upload, X, Link2, Image as ImageIcon, Eye, Send } from 'lucide-react';
+import { ArrowLeft, Upload, X, Link2, Eye, Send } from 'lucide-react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 
 interface LinkData {
     label: string;
@@ -11,10 +10,7 @@ interface LinkData {
 }
 
 export default function NewMessagePage() {
-    const searchParams = useSearchParams();
-    const typeParam = searchParams.get('type');
-
-    const [messageType, setMessageType] = useState<string>(typeParam || '주보');
+    const [messageType, setMessageType] = useState<string>('주보');
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [image, setImage] = useState<File | null>(null);
@@ -24,6 +20,15 @@ export default function NewMessagePage() {
         { label: '', url: '' }
     ]);
     const [showPreview, setShowPreview] = useState(false);
+
+    // URL 파라미터에서 type 가져오기 (클라이언트에서만 실행)
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const typeParam = params.get('type');
+        if (typeParam) {
+            setMessageType(typeParam);
+        }
+    }, []);
 
     const messageTypes = ['주보', '공지', '부고', '이벤트'];
 
