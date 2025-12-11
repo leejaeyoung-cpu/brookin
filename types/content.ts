@@ -1,5 +1,14 @@
 // Content types for church app
 
+export interface News {
+    id: string;
+    title: string;
+    content: string;
+    imageUrl?: string;
+    videoUrl?: string;
+    createdAt: number;
+}
+
 export interface Bulletin {
     id: string;
     title: string;
