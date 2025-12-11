@@ -6,8 +6,8 @@ import { usePathname } from 'next/navigation';
 export default function MobileLayout({ children }: { children: ReactNode }) {
     const pathname = usePathname();
 
-    // 데모 페이지에서는 모바일 프레임 해제 (전체 화면 사용)
-    if (pathname === '/demo') {
+    // 데모 페이지와 관리자 페이지에서는 모바일 프레임 해제 (전체 화면 사용)
+    if (pathname === '/demo' || pathname?.startsWith('/admin')) {
         return <>{children}</>;
     }
 

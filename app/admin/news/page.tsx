@@ -1,192 +1,170 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Plus, Edit, Trash2, Link as LinkIcon, Check, X } from 'lucide-react';
-import Link from 'next/link';
+import { Plus, Search, Edit, Trash2, Link as LinkIcon, MoreVertical, FileText, Video } from 'lucide-react';
 import { useNewsStore } from '@/stores/newsStore';
-import ImageUploader from '@/components/ImageUploader';
-import VideoUploader from '@/components/VideoUploader';
+import NewsEditor from '@/components/NewsEditor';
+import { toast } from 'react-hot-toast';
+import { News } from '@/types/content';
 
 export default function NewsManagePage() {
     const { newsList, addNews, updateNews, deleteNews, loadNews } = useNewsStore();
-    const [isEditing, setIsEditing] = useState(false);
-    const [editingId, setEditingId] = useState<string | null>(null);
-    const [formData, setFormData] = useState({
-        title: '',
-        content: '',
-        imageUrl: '',
-        videoUrl: ''
-    });
-    const [copiedId, setCopiedId] = useState<string | null>(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [isEditorOpen, setIsEditorOpen] = useState(false);
+    const [editingNews, setEditingNews] = useState<News | null>(null);
 
     useEffect(() => {
         loadNews();
     }, [loadNews]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (isEditing && editingId) {
-            await updateNews(editingId, formData);
-        } else {
-            await addNews(formData);
-        }
-        resetForm();
+    const filteredNews = newsList.filter(news =>
+        news.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        news.content.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const handleCreate = () => {
+        setEditingNews(null);
+        setIsEditorOpen(true);
     };
 
-    const handleEdit = (news: any) => {
-        setIsEditing(true);
-        setEditingId(news.id);
-        setFormData({
-            title: news.title,
-            content: news.content,
-            imageUrl: news.imageUrl || '',
-            videoUrl: news.videoUrl || ''
-        });
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    const handleEdit = (news: News) => {
+        setEditingNews(news);
+        setIsEditorOpen(true);
+    };
+
+    const handleSave = async (data: any) => {
+        if (editingNews) {
+            await updateNews(editingNews.id, data);
+        } else {
+            await addNews(data);
+        }
     };
 
     const handleDelete = async (id: string) => {
-        if (confirm('정말 삭제하시겠습니까?')) {
-            await deleteNews(id);
+        if (confirm('정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+            try {
+                await deleteNews(id);
+                toast.success('삭제되었습니다.');
+            } catch (error) {
+                toast.error('삭제에 실패했습니다.');
+            }
         }
-    };
-
-    const resetForm = () => {
-        setIsEditing(false);
-        setEditingId(null);
-        setFormData({ title: '', content: '', imageUrl: '', videoUrl: '' });
     };
 
     const copyLink = (id: string) => {
         const url = `${window.location.origin}/news/${id}`;
         navigator.clipboard.writeText(url);
-        setCopiedId(id);
-        setTimeout(() => setCopiedId(null), 2000);
+        toast.success('링크가 복사되었습니다!');
     };
 
     return (
-        <div className="min-h-screen bg-[var(--background)] pb-20">
+        <div className="space-y-6">
             {/* Header */}
-            <header className="bg-white shadow-sm sticky top-0 z-10">
-                <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
-                    <Link href="/admin" className="p-2 -ml-2">
-                        <ArrowLeft className="w-6 h-6 text-[var(--text-primary)]" />
-                    </Link>
-                    <h1 className="text-lg font-bold text-[var(--text-primary)]">소식 관리</h1>
-                    <div className="w-10" />
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900">소식 관리</h1>
+                    <p className="text-gray-500 mt-1">주보, 공지사항, 영상을 관리하세요.</p>
                 </div>
-            </header>
+                <button
+                    onClick={handleCreate}
+                    className="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-blue-700 transition flex items-center gap-2 shadow-sm hover:shadow-md"
+                >
+                    <Plus className="w-5 h-5" />
+                    새 소식 작성
+                </button>
+            </div>
 
-            <main className="max-w-md mx-auto p-4 space-y-6">
-                {/* Form */}
-                <div className={`kakao-card p-6 transition-colors duration-300 ${isEditing ? 'border-2 border-blue-500 bg-blue-50' : ''}`}>
-                    <h2 className="text-lg font-bold mb-4 flex items-center justify-between">
-                        <div className="flex items-center">
-                            {isEditing ? <Edit className="w-5 h-5 mr-2 text-blue-500" /> : <Plus className="w-5 h-5 mr-2 text-blue-500" />}
-                            {isEditing ? '소식 수정 중...' : '새 소식 작성'}
-                        </div>
-                        {isEditing && (
-                            <button
-                                onClick={resetForm}
-                                className="text-sm text-gray-500 hover:text-gray-700 underline"
-                            >
-                                수정 취소
-                            </button>
+            {/* Search & Filter */}
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+                <div className="relative flex-1">
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                        type="text"
+                        placeholder="제목이나 내용으로 검색..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-blue-100 transition outline-none text-gray-700"
+                    />
+                </div>
+            </div>
+
+            {/* News List (Table) */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <table className="w-full text-left">
+                    <thead className="bg-gray-50 border-b border-gray-100">
+                        <tr>
+                            <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-20">미디어</th>
+                            <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">제목 / 내용</th>
+                            <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-32">작성일</th>
+                            <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-40 text-right">관리</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                        {filteredNews.length > 0 ? (
+                            filteredNews.map((news) => (
+                                <tr key={news.id} className="hover:bg-gray-50 transition group">
+                                    <td className="px-6 py-4 align-top">
+                                        <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden flex items-center justify-center border border-gray-200">
+                                            {news.imageUrl ? (
+                                                <img src={news.imageUrl} alt="" className="w-full h-full object-cover" />
+                                            ) : news.videoUrl ? (
+                                                <Video className="w-5 h-5 text-gray-400" />
+                                            ) : (
+                                                <FileText className="w-5 h-5 text-gray-400" />
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 align-top">
+                                        <h3 className="font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition">{news.title}</h3>
+                                        <p className="text-sm text-gray-500 line-clamp-2">{news.content}</p>
+                                    </td>
+                                    <td className="px-6 py-4 align-top text-sm text-gray-500">
+                                        {new Date(news.createdAt).toLocaleDateString()}
+                                    </td>
+                                    <td className="px-6 py-4 align-top text-right">
+                                        <div className="flex items-center justify-end gap-2">
+                                            <button
+                                                onClick={() => copyLink(news.id)}
+                                                className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
+                                                title="링크 복사"
+                                            >
+                                                <LinkIcon className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                onClick={() => handleEdit(news)}
+                                                className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                                                title="수정"
+                                            >
+                                                <Edit className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(news.id)}
+                                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                title="삭제"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={4} className="px-6 py-12 text-center text-gray-400">
+                                    {searchTerm ? '검색 결과가 없습니다.' : '등록된 소식이 없습니다.'}
+                                </td>
+                            </tr>
                         )}
-                    </h2>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">제목</label>
-                            <input
-                                type="text"
-                                value={formData.title}
-                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                className="kakao-input"
-                                placeholder="제목을 입력하세요"
-                                required
-                            />
-                        </div>
+                    </tbody>
+                </table>
+            </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">내용</label>
-                            <textarea
-                                value={formData.content}
-                                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                                className="kakao-input min-h-[100px]"
-                                placeholder="내용을 입력하세요"
-                                required
-                            />
-                        </div>
-
-                        <ImageUploader
-                            value={formData.imageUrl}
-                            onChange={(val) => setFormData({ ...formData, imageUrl: val })}
-                            label="이미지 첨부 (선택)"
-                        />
-
-                        <VideoUploader
-                            value={formData.videoUrl}
-                            onChange={(val) => setFormData({ ...formData, videoUrl: val })}
-                            label="동영상 첨부 (선택)"
-                        />
-
-                        <div className="flex space-x-2 pt-2">
-                            <button type="submit" className={`kakao-btn flex-1 ${isEditing ? 'bg-blue-600 hover:bg-blue-700 text-white' : ''}`}>
-                                {isEditing ? '수정 내용 저장' : '등록하기'}
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                {/* List */}
-                <div className="space-y-4">
-                    <h3 className="font-bold text-[var(--text-secondary)] px-1">등록된 소식 ({newsList.length})</h3>
-                    {newsList.map((news) => (
-                        <div key={news.id} className="kakao-card p-4">
-                            <div className="flex justify-between items-start mb-2">
-                                <h3 className="font-bold text-lg line-clamp-1">{news.title}</h3>
-                                <div className="flex space-x-1">
-                                    <button onClick={() => handleEdit(news)} className="p-2 text-gray-400 hover:text-blue-500">
-                                        <Edit className="w-4 h-4" />
-                                    </button>
-                                    <button onClick={() => handleDelete(news.id)} className="p-2 text-gray-400 hover:text-red-500">
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            </div>
-
-                            <p className="text-[var(--text-secondary)] text-sm line-clamp-2 mb-3">
-                                {news.content}
-                            </p>
-
-                            <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100">
-                                <span className="text-xs text-gray-400">
-                                    {new Date(news.createdAt).toLocaleDateString()}
-                                </span>
-                                <button
-                                    onClick={() => copyLink(news.id)}
-                                    className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-sm transition-colors ${copiedId === news.id
-                                        ? 'bg-green-100 text-green-700'
-                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                        }`}
-                                >
-                                    {copiedId === news.id ? (
-                                        <>
-                                            <Check className="w-3 h-3" />
-                                            <span>복사됨</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <LinkIcon className="w-3 h-3" />
-                                            <span>링크 복사</span>
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </main>
+            <NewsEditor
+                isOpen={isEditorOpen}
+                onClose={() => setIsEditorOpen(false)}
+                onSave={handleSave}
+                initialData={editingNews}
+            />
         </div>
     );
 }
