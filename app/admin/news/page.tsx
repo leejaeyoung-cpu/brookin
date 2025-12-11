@@ -79,10 +79,20 @@ export default function NewsManagePage() {
 
             <main className="max-w-md mx-auto p-4 space-y-6">
                 {/* Form */}
-                <div className="kakao-card p-6">
-                    <h2 className="text-lg font-bold mb-4 flex items-center">
-                        <Plus className="w-5 h-5 mr-2 text-blue-500" />
-                        {isEditing ? '소식 수정' : '새 소식 작성'}
+                <div className={`kakao-card p-6 transition-colors duration-300 ${isEditing ? 'border-2 border-blue-500 bg-blue-50' : ''}`}>
+                    <h2 className="text-lg font-bold mb-4 flex items-center justify-between">
+                        <div className="flex items-center">
+                            {isEditing ? <Edit className="w-5 h-5 mr-2 text-blue-500" /> : <Plus className="w-5 h-5 mr-2 text-blue-500" />}
+                            {isEditing ? '소식 수정 중...' : '새 소식 작성'}
+                        </div>
+                        {isEditing && (
+                            <button
+                                onClick={resetForm}
+                                className="text-sm text-gray-500 hover:text-gray-700 underline"
+                            >
+                                수정 취소
+                            </button>
+                        )}
                     </h2>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
@@ -121,14 +131,9 @@ export default function NewsManagePage() {
                         />
 
                         <div className="flex space-x-2 pt-2">
-                            <button type="submit" className="kakao-btn flex-1">
-                                {isEditing ? '수정 완료' : '등록하기'}
+                            <button type="submit" className={`kakao-btn flex-1 ${isEditing ? 'bg-blue-600 hover:bg-blue-700 text-white' : ''}`}>
+                                {isEditing ? '수정 내용 저장' : '등록하기'}
                             </button>
-                            {isEditing && (
-                                <button type="button" onClick={resetForm} className="px-4 py-3 bg-gray-200 rounded-xl font-medium">
-                                    취소
-                                </button>
-                            )}
                         </div>
                     </form>
                 </div>
@@ -161,8 +166,8 @@ export default function NewsManagePage() {
                                 <button
                                     onClick={() => copyLink(news.id)}
                                     className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-sm transition-colors ${copiedId === news.id
-                                            ? 'bg-green-100 text-green-700'
-                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                        ? 'bg-green-100 text-green-700'
+                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                         }`}
                                 >
                                     {copiedId === news.id ? (

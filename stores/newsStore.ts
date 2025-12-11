@@ -44,6 +44,7 @@ export const useNewsStore = create<NewsState>((set, get) => ({
             });
         } catch (error) {
             console.error('Failed to delete news:', error);
+            alert('삭제에 실패했습니다. 권한을 확인해주세요.');
         }
     },
 
