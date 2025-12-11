@@ -80,14 +80,12 @@ export default function AppHomePage() {
                         </div>
                     </div>
 
-                    {!isInstalled && installPrompt && (
-                        <button
-                            onClick={handleInstallClick}
-                            className="w-full bg-[var(--kakao-brown)] text-[var(--kakao-yellow)] px-4 py-3 rounded-xl font-semibold flex items-center justify-center space-x-2 hover:bg-opacity-90 transition"
-                        >
-                            <Home className="w-5 h-5" />
-                            <span>앱을 홈 화면에 추가하기</span>
-                        </button>
+                    {!isInstalled && (
+                        <div className="bg-[var(--kakao-brown)] bg-opacity-10 rounded-xl p-4 text-[var(--kakao-brown)] text-sm">
+                            <p className="font-semibold mb-2">📱 홈 화면에 추가하는 방법:</p>
+                            <p className="mb-1">• <strong>Android:</strong> Chrome 메뉴 (⋮) → "홈 화면에 추가"</p>
+                            <p>• <strong>iPhone:</strong> 공유 버튼 (□↑) → "홈 화면에 추가"</p>
+                        </div>
                     )}
                 </div>
             </header>
@@ -190,7 +188,7 @@ export default function AppHomePage() {
 
             {/* 관리자 링크 (개발용) */}
             <div className="fixed bottom-4 right-4">
-                <Link href="/">
+                <Link href="/admin">
                     <button className="bg-gray-800 text-white px-4 py-2 rounded-full text-sm shadow-lg hover:bg-gray-700 transition">
                         관리자 →
                     </button>
