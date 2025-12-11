@@ -80,13 +80,11 @@ export default function AppHomePage() {
                         </div>
                     </div>
 
-                    {!isInstalled && (
-                        <div className="bg-[var(--kakao-brown)] bg-opacity-10 rounded-xl p-4 text-[var(--kakao-brown)] text-sm">
-                            <p className="font-semibold mb-2">📱 홈 화면에 추가하는 방법:</p>
-                            <p className="mb-1">• <strong>Android:</strong> Chrome 메뉴 (⋮) → "홈 화면에 추가"</p>
-                            <p>• <strong>iPhone:</strong> 공유 버튼 (□↑) → "홈 화면에 추가"</p>
-                        </div>
-                    )}
+                    <div className="bg-[var(--kakao-brown)] bg-opacity-10 rounded-xl p-4 text-[var(--kakao-brown)] text-sm">
+                        <p className="font-semibold mb-2">📱 홈 화면에 추가하는 방법:</p>
+                        <p className="mb-1">• <strong>Android:</strong> Chrome 메뉴 (⋮) → "홈 화면에 추가"</p>
+                        <p>• <strong>iPhone:</strong> 공유 버튼 (□↑) → "홈 화면에 추가"</p>
+                    </div>
                 </div>
             </header>
 
