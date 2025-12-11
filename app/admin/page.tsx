@@ -67,6 +67,12 @@ export default function HomePage() {
               <Link href="/admin/groups" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">
                 그룹 관리
               </Link>
+              <Link href="/admin/bulletin" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">
+                📖 주보 관리
+              </Link>
+              <Link href="/admin/announcements" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">
+                📢 공지 관리
+              </Link>
               <Link href="/admin/settings" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">
                 설정
               </Link>

@@ -1,197 +1,73 @@
 'use client';
 
-import { Bell, Book, Calendar, Camera, Church, Home, Users, MapPin } from 'lucide-react';
+import { Book, Menu } from 'lucide-react';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
 
-export default function AppHomePage() {
-    const [installPrompt, setInstallPrompt] = useState<any>(null);
-    const [isInstalled, setIsInstalled] = useState(false);
-
-    useEffect(() => {
-        // PWA 설치 프롬프트 감지
-        const handleBeforeInstallPrompt = (e: Event) => {
-            e.preventDefault();
-            setInstallPrompt(e);
-        };
-
-        window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-        // 이미 설치되었는지 확인
-        if (window.matchMedia('(display-mode: standalone)').matches) {
-            setIsInstalled(true);
-        }
-
-        return () => {
-            window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-        };
-    }, []);
-
-    const handleInstallClick = async () => {
-        if (!installPrompt) return;
-
-        installPrompt.prompt();
-        const { outcome } = await installPrompt.userChoice;
-
-        if (outcome === 'accepted') {
-            setInstallPrompt(null);
-            setIsInstalled(true);
-        }
-    };
-
-    const recentNotifications = [
-        {
-            id: 1,
-            type: '주보',
-            title: '대림 제3주일 주보',
-            date: '2025-12-15',
-            image: 'https://via.placeholder.com/400x200/FEE500/3C1E1E?text=주보',
-        },
-        {
-            id: 2,
-            type: '공지',
-            title: '성탄 미사 시간 안내',
-            date: '2025-12-10',
-            image: 'https://via.placeholder.com/400x200/E8F5E9/00C851?text=성탄',
-        },
-    ];
-
-    const quickActions = [
-        { icon: Book, label: '주보', href: '/bulletin', color: 'bg-yellow-100 text-yellow-700' },
-        { icon: Calendar, label: '미사 시간', href: '/mass-schedule', color: 'bg-blue-100 text-blue-700' },
-        { icon: Camera, label: '사진첩', href: '/gallery', color: 'bg-purple-100 text-purple-700' },
-        { icon: Users, label: '단체/모임', href: '/groups', color: 'bg-green-100 text-green-700' },
-        { icon: Church, label: '성당 소개', href: '/about', color: 'bg-red-100 text-red-700' },
-        { icon: MapPin, label: '오시는 길', href: '/location', color: 'bg-orange-100 text-orange-700' },
-    ];
-
+export default function HomePage() {
     return (
-        <div className="min-h-screen bg-[var(--background)] pb-20">
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
             {/* Header */}
-            <header className="bg-gradient-to-r from-[var(--kakao-yellow)] to-[var(--kakao-yellow-dark)] text-[var(--kakao-brown)] py-6 px-4 shadow-md">
-                <div className="max-w-2xl mx-auto">
-                    <div className="flex items-center space-x-3 mb-4">
-                        <div className="w-16 h-16 bg-[var(--kakao-brown)] rounded-full flex items-center justify-center">
-                            <Church className="w-10 h-10 text-[var(--kakao-yellow)]" />
-                        </div>
-                        <div>
-                            <h1 className="text-2xl font-bold">소래포구 성당</h1>
-                            <p className="text-sm opacity-80">천주교 인천교구</p>
-                        </div>
-                    </div>
-
-                    <div className="bg-[var(--kakao-brown)] bg-opacity-10 rounded-xl p-4 text-[var(--kakao-brown)] text-sm">
-                        <p className="font-semibold mb-2">📱 홈 화면에 추가하는 방법:</p>
-                        <p className="mb-1">• <strong>Android:</strong> Chrome 메뉴 (⋮) → "홈 화면에 추가"</p>
-                        <p>• <strong>iPhone:</strong> 공유 버튼 (□↑) → "홈 화면에 추가"</p>
-                    </div>
+            <header className="bg-white shadow-sm">
+                <div className="max-w-4xl mx-auto px-4 py-6 text-center">
+                    <h1 className="text-3xl font-bold text-gray-900">소래포구 성당</h1>
+                    <p className="text-gray-600 mt-2">Sorae Port Catholic Church</p>
                 </div>
             </header>
 
-            <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
-                {/* 최신 알림 */}
-                <section>
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-xl font-bold text-[var(--text-primary)] flex items-center space-x-2">
-                            <Bell className="w-6 h-6" />
-                            <span>최신 소식</span>
-                        </h2>
-                        <Link href="/notifications" className="text-sm text-[var(--kakao-brown)] font-medium">
-                            전체보기 →
-                        </Link>
+            {/* Main Content */}
+            <main className="max-w-4xl mx-auto px-4 py-12">
+                {/* Church Photo */}
+                <div className="mb-12">
+                    <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+                        <img
+                            src="/church.jpg"
+                            alt="소래포구 성당"
+                            className="w-full h-auto"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                     </div>
+                </div>
 
-                    <div className="space-y-4">
-                        {recentNotifications.map((notification) => (
-                            <div key={notification.id} className="kakao-card cursor-pointer">
-                                <img
-                                    src={notification.image}
-                                    alt={notification.title}
-                                    className="w-full h-48 object-cover rounded-lg mb-3"
-                                />
-                                <div className="flex items-center space-x-2 mb-2">
-                                    <span className={`kakao-badge ${notification.type === '주보' ? 'primary' : 'info'
-                                        }`}>
-                                        {notification.type}
-                                    </span>
-                                    <span className="text-sm text-[var(--text-secondary)]">{notification.date}</span>
+                {/* Action Buttons */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                    {/* 주보 보기 */}
+                    <Link href="/bulletin">
+                        <button className="w-full bg-white hover:bg-gray-50 border-2 border-gray-200 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group">
+                            <div className="flex flex-col items-center space-y-4">
+                                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-200 transition">
+                                    <Book className="w-8 h-8 text-blue-600" />
                                 </div>
-                                <h3 className="font-bold text-[var(--text-primary)]">{notification.title}</h3>
+                                <h2 className="text-2xl font-bold text-gray-900">주보 보기</h2>
+                                <p className="text-gray-600 text-center">주간 미사 안내 및 공지사항</p>
                             </div>
-                        ))}
-                    </div>
-                </section>
-
-                {/* 빠른 실행 */}
-                <section>
-                    <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">메뉴</h2>
-
-                    <div className="grid grid-cols-3 gap-4">
-                        {quickActions.map((action, index) => (
-                            <Link key={index} href={action.href}>
-                                <div className="kakao-card text-center hover:shadow-lg transition cursor-pointer p-4">
-                                    <div className={`w-14 h-14 ${action.color} rounded-2xl flex items-center justify-center mx-auto mb-3`}>
-                                        <action.icon className="w-7 h-7" />
-                                    </div>
-                                    <p className="text-sm font-medium text-[var(--text-primary)]">{action.label}</p>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                </section>
-
-                {/* 미사 시간 (간략) */}
-                <section className="kakao-card bg-gradient-to-br from-blue-50 to-purple-50">
-                    <h3 className="font-bold text-[var(--text-primary)] mb-3 flex items-center space-x-2">
-                        <Calendar className="w-5 h-5" />
-                        <span>미사 시간</span>
-                    </h3>
-
-                    <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                            <span className="text-[var(--text-secondary)]">주일 미사</span>
-                            <span className="font-medium text-[var(--text-primary)]">09:00, 11:00, 16:00</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-[var(--text-secondary)]">평일 미사</span>
-                            <span className="font-medium text-[var(--text-primary)]">월/수/금 10:00</span>
-                        </div>
-                        <Link href="/mass-schedule" className="block text-center text-[var(--kakao-brown)] font-medium mt-3">
-                            전체 시간표 보기 →
-                        </Link>
-                    </div>
-                </section>
-
-                {/* 성당 정보 */}
-                <section className="kakao-card">
-                    <h3 className="font-bold text-[var(--text-primary)] mb-3 flex items-center space-x-2">
-                        <MapPin className="w-5 h-5" />
-                        <span>오시는 길</span>
-                    </h3>
-
-                    <p className="text-sm text-[var(--text-secondary)] mb-2">
-                        인천광역시 남동구 장도로 18-2
-                    </p>
-                    <p className="text-sm text-[var(--text-secondary)] mb-3">
-                        전화: 032-123-4567
-                    </p>
-
-                    <Link href="/location">
-                        <button className="w-full bg-[var(--kakao-yellow)] text-[var(--kakao-brown)] py-2 rounded-lg font-medium hover:bg-[var(--kakao-yellow-dark)] transition">
-                            지도에서 보기
                         </button>
                     </Link>
-                </section>
-            </main>
 
-            {/* 관리자 링크 (개발용) */}
-            <div className="fixed bottom-4 right-4">
-                <Link href="/admin">
-                    <button className="bg-gray-800 text-white px-4 py-2 rounded-full text-sm shadow-lg hover:bg-gray-700 transition">
-                        관리자 →
-                    </button>
-                </Link>
-            </div>
+                    {/* 메뉴 보기 */}
+                    <Link href="/announcements">
+                        <button className="w-full bg-white hover:bg-gray-50 border-2 border-gray-200 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group">
+                            <div className="flex flex-col items-center space-y-4">
+                                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-200 transition">
+                                    <Menu className="w-8 h-8 text-green-600" />
+                                </div>
+                                <h2 className="text-2xl font-bold text-gray-900">공지사항</h2>
+                                <p className="text-gray-600 text-center">성당 소식 및 알림</p>
+                            </div>
+                        </button>
+                    </Link>
+                </div>
+
+                {/* Footer Info */}
+                <div className="mt-16 text-center">
+                    <div className="inline-block bg-white rounded-xl shadow-md px-8 py-6 border border-gray-100">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-3">미사 시간</h3>
+                        <div className="space-y-2 text-gray-700">
+                            <p><span className="font-medium">주일미사:</span> 오전 10:00, 오후 5:00</p>
+                            <p><span className="font-medium">평일미사:</span> 오전 6:30</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
     );
 }
