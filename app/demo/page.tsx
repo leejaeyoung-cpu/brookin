@@ -20,7 +20,7 @@ export default function DemoPage() {
             </div>
 
             {/* Demo Container */}
-            <div className="max-w-7xl mx-auto flex flex-col xl:flex-row justify-center items-start gap-16">
+            <div className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-center items-start gap-16 lg:gap-8 xl:gap-16">
 
                 {/* User App Section */}
                 <div className="flex flex-col items-center group">
@@ -52,7 +52,7 @@ export default function DemoPage() {
                 </div>
 
                 {/* Arrow (Desktop only) */}
-                <div className="hidden xl:flex items-center justify-center h-[800px] text-gray-600">
+                <div className="hidden lg:flex items-center justify-center h-[800px] text-gray-600">
                     <ArrowRight className="w-12 h-12 opacity-20" />
                 </div>
 
